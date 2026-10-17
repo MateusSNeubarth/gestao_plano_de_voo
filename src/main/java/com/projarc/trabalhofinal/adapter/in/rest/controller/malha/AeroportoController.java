@@ -2,7 +2,7 @@ package com.projarc.trabalhofinal.adapter.in.rest.controller.malha;
 
 import com.projarc.trabalhofinal.adapter.in.rest.dto.malha.request.AeroportoRequest;
 import com.projarc.trabalhofinal.adapter.in.rest.dto.malha.response.AeroportoResponse;
-import com.projarc.trabalhofinal.adapter.in.rest.mapper.malha.AeroportoRestMapper;
+import com.projarc.trabalhofinal.adapter.in.rest.mapper.MalhaRestMapper;
 import com.projarc.trabalhofinal.application.port.in.malha.AeroportoInPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -13,7 +13,7 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping("/aeroportos")
+@RequestMapping("/api/aeroportos")
 @RequiredArgsConstructor
 public class AeroportoController {
 
@@ -23,7 +23,7 @@ public class AeroportoController {
     public ResponseEntity<List<AeroportoResponse>> getAeroportos() {
         return ResponseEntity.ok(
                 aeronaves.getAeroportos().stream()
-                        .map(AeroportoRestMapper::fromDomain)
+                        .map(MalhaRestMapper::fromDomain)
                         .toList()
         );
     }
@@ -34,7 +34,7 @@ public class AeroportoController {
         if (domain == null) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(AeroportoRestMapper.fromDomain(domain));
+        return ResponseEntity.ok(MalhaRestMapper.fromDomain(domain));
     }
 
     @PostMapping
@@ -45,7 +45,7 @@ public class AeroportoController {
         }
 
         try {
-            this.aeronaves.createAeroporto(AeroportoRestMapper.toDomain(request));
+            this.aeronaves.createAeroporto(MalhaRestMapper.toDomain(request));
             return ResponseEntity.created(URI.create("/aeroportos/" + request.codigo())).build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
