@@ -13,7 +13,12 @@ spring:
   sql:
     init:
       mode: never
-  security:
-    user:
-      name: test
-      password: test
+
+seguranca:
+  usuarios:
+    admin:
+      username: ${ADMIN_USERNAME:admin}
+      password: ${ADMIN_PASSWORD:admin123}
+    usuario:
+      username: ${USUARIO_USERNAME:usuario}
+      password: ${USUARIO_PASSWORD:usuario123}
