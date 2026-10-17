@@ -1,6 +1,6 @@
 package com.projarc.trabalhofinal.adapter.out.persistence.adapter.malha;
 
-import com.projarc.trabalhofinal.adapter.out.persistence.mapper.malha.AeroportoPersistenceMapper;
+import com.projarc.trabalhofinal.adapter.out.persistence.mapper.MalhaPersistenceMapper;
 import com.projarc.trabalhofinal.adapter.out.persistence.repository.AeroportoJpaRepository;
 import com.projarc.trabalhofinal.application.port.out.malha.AeroportoPort;
 import com.projarc.trabalhofinal.domain.model.malha.Aeroporto;
@@ -18,17 +18,17 @@ public class AeroportoJpaAdapter implements AeroportoPort {
     @Override
     public List<Aeroporto> getAeroportos() {
         return aeroportoJpaRepository.findAll().stream()
-                .map(AeroportoPersistenceMapper::toDomain)
+                .map(MalhaPersistenceMapper::toDomain)
                 .toList();
     }
 
     @Override
     public Aeroporto getAeroporto(String codigo) {
-        return AeroportoPersistenceMapper.toDomain(aeroportoJpaRepository.findByCodigo(codigo));
+        return aeroportoJpaRepository.findByCodigo(codigo).map(MalhaPersistenceMapper::toDomain).orElse(null);
     }
 
     @Override
     public void createAeroporto(Aeroporto aeroporto) {
-        aeroportoJpaRepository.save(AeroportoPersistenceMapper.fromDomain(aeroporto));
+        aeroportoJpaRepository.save(MalhaPersistenceMapper.fromDomain(aeroporto));
     }
 }
