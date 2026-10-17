@@ -31,8 +31,8 @@ public class AeroviaController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> createAerovia(AeroviaRequest request) {
+    public ResponseEntity<Void> createAerovia(@RequestBody AeroviaRequest request) {
         aeroviaInPort.createAerovia(MalhaRestMapper.toDomain(request));
-        return ResponseEntity.created(URI.create("/api/aerovias" + request.id())).build();
+        return ResponseEntity.created(URI.create("/api/aerovias/" + request.id())).build();
     }
 }
