@@ -1,9 +1,12 @@
 
 package com.projarc.trabalhofinal.domain.model.plano;
 
+import org.springframework.stereotype.Component;
+
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 public class VerificacaoDePouso implements VerificacaoDoPlano {
 
     @Override
@@ -21,10 +24,6 @@ public class VerificacaoDePouso implements VerificacaoDoPlano {
         if (plano.getPercurso() == null
                 || plano.getPercurso().getTrechos() == null
                 || plano.getPercurso().getTrechos().isEmpty()) {
-            problemas.add(new Problema(
-                    "PERCURSO_VAZIO",
-                    "O percurso deve possuir pelo menos um trecho."
-            ));
             return problemas;
         }
 
@@ -76,14 +75,3 @@ public class VerificacaoDePouso implements VerificacaoDoPlano {
         return problemas;
     }
 }
-
-/**
- * Verifica se os pousos previstos no percurso possuem os dados obrigatórios.
- *
- * Responsabilidades:
- * - Garantir que o último trecho termine com pouso.
- * - Verificar se cada pouso informa um número de vaga válido.
- * - Verificar se cada pouso informa um tempo de permanência positivo.
- *
- * Esta classe não verifica a disponibilidade real das vagas.
- */

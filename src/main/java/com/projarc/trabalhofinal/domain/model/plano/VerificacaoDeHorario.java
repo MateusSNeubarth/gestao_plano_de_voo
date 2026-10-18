@@ -1,11 +1,14 @@
 
 package com.projarc.trabalhofinal.domain.model.plano;
 
+import org.springframework.stereotype.Component;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Component
 public class VerificacaoDeHorario implements VerificacaoDoPlano {
 
     @Override
@@ -41,10 +44,6 @@ public class VerificacaoDeHorario implements VerificacaoDoPlano {
         if (plano.getPercurso() == null
                 || plano.getPercurso().getTrechos() == null
                 || plano.getPercurso().getTrechos().isEmpty()) {
-            problemas.add(new Problema(
-                    "PERCURSO_VAZIO",
-                    "O percurso deve possuir pelo menos um trecho."
-            ));
             return problemas;
         }
 
@@ -132,14 +131,3 @@ public class VerificacaoDeHorario implements VerificacaoDoPlano {
         return problemas;
     }
 }
-
-/**
- * Verifica se os horários dos trechos do plano de voo são válidos.
- *
- * Responsabilidades:
- * - Garantir que o primeiro trecho comece no horário de partida.
- * - Verificar a sequência dos horários entre os trechos.
- * - Considerar o tempo de voo e a permanência após os pousos.
- * - Garantir que a chegada ao destino final ocorra no mesmo dia
- *   da partida.
- */

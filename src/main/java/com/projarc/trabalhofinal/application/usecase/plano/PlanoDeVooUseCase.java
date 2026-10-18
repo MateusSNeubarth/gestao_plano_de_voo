@@ -1,12 +1,20 @@
 package com.projarc.trabalhofinal.application.usecase.plano;
 
 import com.projarc.trabalhofinal.application.port.in.plano.PlanoDeVooInPort;
+import com.projarc.trabalhofinal.application.port.out.malha.AeroportoPort;
+import com.projarc.trabalhofinal.application.port.out.malha.AeroviaPort;
 import com.projarc.trabalhofinal.application.port.out.plano.PlanoDeVooPort;
+import com.projarc.trabalhofinal.domain.exception.PlanoNaoEncontradoException;
+import com.projarc.trabalhofinal.domain.exception.TransicaoInvalidaException;
+import com.projarc.trabalhofinal.domain.model.plano.Percurso;
 import com.projarc.trabalhofinal.domain.model.plano.PlanoDeVoo;
 import com.projarc.trabalhofinal.domain.model.plano.Status;
+import com.projarc.trabalhofinal.domain.model.plano.Trecho;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -14,6 +22,8 @@ import java.util.List;
 public class PlanoDeVooUseCase implements PlanoDeVooInPort {
 
     private final PlanoDeVooPort planoDeVooPort;
+    private final AeroviaPort aeroviaPort;
+    private final AeroportoPort aeroportoPort;
 
     @Override
     public PlanoDeVoo criarPlano(PlanoDeVoo plano) {
@@ -26,6 +36,12 @@ public class PlanoDeVooUseCase implements PlanoDeVooInPort {
         if (plano.getStatus() != Status.EDICAO) {
             throw new IllegalArgumentException(
                     "O plano de voo deve estar em status de edição."
+            );
+        }
+
+        if (plano.getDataHoraPartida() == null) {
+            throw new IllegalArgumentException(
+                    "A data e hora de partida são obrigatórias."
             );
         }
 
@@ -94,7 +110,11 @@ public class PlanoDeVooUseCase implements PlanoDeVooInPort {
                     "O ID do plano de voo deve ser maior que zero."
             );
         }
-        return planoDeVooPort.consultarPlano(id);
+        var plano = planoDeVooPort.getPlanoDeVoo(id);
+        if (plano == null) {
+            throw new PlanoNaoEncontradoException(id);
+        }
+        return plano;
     }
 
     @Override
@@ -105,5 +125,72 @@ public class PlanoDeVooUseCase implements PlanoDeVooInPort {
             );
         }
         return planoDeVooPort.listarPlanosPorStatus(status);
+    }
+
+    @Override
+    @Transactional
+    public PlanoDeVoo substituirPercurso(Integer id, List<Trecho> trechos) {
+        var plano = getPlanoEmEdicao(id);
+        if (trechos == null) {
+            throw new IllegalArgumentException("A lista de trechos não pode ser nula.");
+        }
+        return gravarPercurso(plano, trechos);
+    }
+
+    @Override
+    @Transactional
+    public PlanoDeVoo alterarTrecho(Integer id, int ordem, Trecho trecho) {
+        var plano = getPlanoEmEdicao(id);
+        var trechos = new ArrayList<>(plano.getPercurso().getTrechos());
+        if (ordem < 1 || ordem > trechos.size()) {
+            throw new IllegalArgumentException("O plano não possui o trecho " + ordem + ".");
+        }
+        trechos.set(ordem - 1, trecho);
+        return gravarPercurso(plano, trechos);
+    }
+
+    private PlanoDeVoo gravarPercurso(PlanoDeVoo plano, List<Trecho> trechos) {
+        var percurso = Percurso.builder().build();
+        percurso.substituirTrechos(trechos.stream().map(this::resolverTrecho).toList());
+        plano.substituirPercurso(percurso);
+        return planoDeVooPort.updatePercurso(plano.getId(), plano.getPercurso());
+    }
+
+    private Trecho resolverTrecho(Trecho trecho) {
+        if (trecho == null || trecho.getAerovia() == null || trecho.getAerovia().getId() == null
+                || trecho.getAltitude() == null || trecho.getHorarioEntradaNaAerovia() == null
+                || trecho.getAcaoNaChegada() == null) {
+            throw new IllegalArgumentException(
+                    "Todo trecho deve informar aerovia, altitude, horário de entrada e ação na chegada."
+            );
+        }
+
+        var aerovia = aeroviaPort.getAerovia(trecho.getAerovia().getId());
+        if (aerovia == null) {
+            throw new IllegalArgumentException("Aerovia não encontrada: " + trecho.getAerovia().getId());
+        }
+        trecho.setAerovia(aerovia);
+
+        if (trecho.getNumeroVagaPretendida() != null) {
+            var destino = aeroportoPort.getAeroporto(aerovia.getCodDestino());
+            if (trecho.getNumeroVagaPretendida() < 1 || trecho.getNumeroVagaPretendida() > destino.getQtdVagas()) {
+                throw new IllegalArgumentException(
+                        "A vaga " + trecho.getNumeroVagaPretendida()
+                                + " não pertence ao aeroporto " + destino.getCodigo() + "."
+                );
+            }
+        }
+        return trecho;
+    }
+
+    private PlanoDeVoo getPlanoEmEdicao(Integer id) {
+        var plano = planoDeVooPort.getPlanoDeVoo(id);
+        if (plano == null) {
+            throw new PlanoNaoEncontradoException(id);
+        }
+        if (plano.getStatus() != Status.EDICAO) {
+            throw new TransicaoInvalidaException("Somente planos em edição podem ter o percurso alterado");
+        }
+        return plano;
     }
 }

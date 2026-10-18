@@ -1,8 +1,11 @@
 package com.projarc.trabalhofinal.domain.model.plano;
 
+import org.springframework.stereotype.Component;
+
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 public class VerificacaoDePercurso implements VerificacaoDoPlano {
 
     @Override
@@ -40,13 +43,3 @@ public class VerificacaoDePercurso implements VerificacaoDoPlano {
         return problemas;
     }
 }
-
-/**
- * Verifica se o percurso do plano de voo é válido.
- *
- * Responsabilidades:
- * - Garantir que o plano possua um percurso com pelo menos um trecho.
- * - Verificar se os trechos estão conectados corretamente.
- * - Garantir que o percurso comece no aeroporto de origem
- *   e termine no aeroporto de destino.
- */
