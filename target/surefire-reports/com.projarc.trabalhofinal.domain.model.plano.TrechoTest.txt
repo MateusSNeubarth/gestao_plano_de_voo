@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: com.projarc.trabalhofinal.domain.model.plano.TrechoTest
--------------------------------------------------------------------------------
-Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.099 s -- in com.projarc.trabalhofinal.domain.model.plano.TrechoTest
