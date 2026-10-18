@@ -4,6 +4,7 @@ import com.projarc.trabalhofinal.adapter.in.rest.dto.AeronaveRequest;
 import com.projarc.trabalhofinal.adapter.in.rest.dto.AeronaveResponse;
 import com.projarc.trabalhofinal.adapter.in.rest.mapper.AeronaveRestMapper;
 import com.projarc.trabalhofinal.application.port.in.AeronaveInPort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,7 +12,7 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping("/aeronaves")
+@RequestMapping("/api/aeronaves")
 public class AeronaveController {
     private final AeronaveInPort consultarAeronaves;
 
@@ -34,11 +35,17 @@ public class AeronaveController {
 
     @PostMapping
     public ResponseEntity<AeronaveResponse> criarAeronave(@RequestBody AeronaveRequest request) {
-        var aeronave = AeronaveRestMapper.toDomain(request);
-        var criada = consultarAeronaves.criarAeronave(aeronave);
-        return ResponseEntity
-                .created(URI.create("/aeronaves/" + criada.getPrefixo()))
-                .body(AeronaveRestMapper.toResponse(criada));
+        try {
+            var aeronave = AeronaveRestMapper.toDomain(request);
+            var criada = consultarAeronaves.criarAeronave(aeronave);
+            return ResponseEntity
+                    .created(URI.create("/api/aeronaves/" + criada.getPrefixo()))
+                    .body(AeronaveRestMapper.toResponse(criada));
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).build();
+        }
     }
 
 }

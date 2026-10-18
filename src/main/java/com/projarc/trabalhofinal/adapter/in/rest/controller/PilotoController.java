@@ -11,7 +11,7 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping("/pilotos")
+@RequestMapping("/api/pilotos")
 public class PilotoController {
     private final PilotoInPort pilotoInPort;
 
@@ -36,7 +36,7 @@ public class PilotoController {
         var piloto = PilotoRestMapper.toDomain(request);
         var criada = pilotoInPort.criarPiloto(piloto);
         return ResponseEntity
-                .created(URI.create("/pilotos/" + criada.getId()))
+                .created(URI.create("/api/pilotos/" + criada.getId()))
                 .body(PilotoRestMapper.toResponse(criada));
     }
 }

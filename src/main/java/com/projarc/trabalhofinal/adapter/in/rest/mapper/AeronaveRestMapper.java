@@ -30,6 +30,9 @@ public final class AeronaveRestMapper {
     }
 
     public static Aeronave toDomain(AeronaveRequest request) {
+        if (request.categoria() == null) {
+            throw new IllegalArgumentException("Categoria é obrigatória");
+        }
         return switch (request.categoria()) {
             case "PARTICULAR" -> AeronaveParticular.builder()
                     .prefixo(request.prefixo())
