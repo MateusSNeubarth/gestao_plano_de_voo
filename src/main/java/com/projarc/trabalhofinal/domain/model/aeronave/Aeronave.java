@@ -16,10 +16,16 @@ public abstract class Aeronave {
     private List<RegraDeOperacao> regras;
 
     public Double distanciaMaximaSemReabastecimento() {
-        throw new UnsupportedOperationException("TODO");
+        if (autonomia == null || autonomia <= 0) {
+            throw new IllegalArgumentException("A autonomia da aeronave deve ser positiva.");
+        }
+        return autonomia * 0.85;
     }
 
     public Boolean podeOperar(Integer altitude, LocalDateTime entrada, LocalDateTime saida) {
-        throw new UnsupportedOperationException("TODO");
+        return altitude != null && altitude >= 25000 && altitude <= 35000 && altitude % 1000 == 0
+                && entrada != null && saida != null && saida.isAfter(entrada)
+                && regras != null && !regras.isEmpty()
+                && regras.stream().allMatch(regra -> regra.permite(altitude, entrada, saida));
     }
 }
