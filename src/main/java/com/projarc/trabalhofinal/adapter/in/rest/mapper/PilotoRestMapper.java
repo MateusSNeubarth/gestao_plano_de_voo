@@ -12,6 +12,8 @@ public final class PilotoRestMapper {
     }
 
     public static Piloto toDomain(PilotoRequest request) {
-        return new Piloto(null, request.nome());
+        return Piloto.builder()
+                .nome(request.nome())
+                .build();
     }
 }
