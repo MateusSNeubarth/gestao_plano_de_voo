@@ -21,20 +21,27 @@ import java.util.Set;
 public class PlanoDeVoo {
 
     private Integer id;
+
     @Builder.Default
     private Status status = Status.EDICAO;
+
     private LocalDateTime dataHoraPartida;
     private Aeronave aeronave;
     private Piloto piloto;
     private Aeroporto origem;
     private Aeroporto destino;
+
     @Builder.Default
     private Percurso percurso = Percurso.builder().build();
+
     @Builder.Default
     private List<Reserva> reservas = new ArrayList<>();
 
     public void aprovar() {
-        exigirStatus(Status.EDICAO, "Somente planos em edição podem ser aprovados");
+        exigirStatus(
+                Status.EDICAO,
+                "Somente planos em edição podem ser aprovados"
+        );
         status = Status.APROVADO;
     }
 
@@ -78,6 +85,21 @@ public class PlanoDeVoo {
                                     .build())));
         }
         return new ArrayList<>(necessarias);
+    }
+
+    public void substituirPercurso(Percurso novoPercurso) {
+        exigirStatus(
+                Status.EDICAO,
+                "Somente planos em edição podem ter o percurso alterado"
+        );
+
+        if (novoPercurso == null) {
+            throw new IllegalArgumentException(
+                    "O percurso não pode ser nulo."
+            );
+        }
+
+        this.percurso = novoPercurso;
     }
 
     private void exigirStatus(Status esperado, String mensagem) {

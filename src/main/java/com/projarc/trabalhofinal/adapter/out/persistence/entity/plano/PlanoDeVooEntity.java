@@ -1,3 +1,4 @@
+
 package com.projarc.trabalhofinal.adapter.out.persistence.entity.plano;
 
 import com.projarc.trabalhofinal.adapter.out.persistence.entity.aeronave.AeronaveEntity;
