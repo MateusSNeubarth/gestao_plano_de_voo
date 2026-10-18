@@ -6,7 +6,19 @@ spring:
     driver-class-name: org.postgresql.Driver
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
-  security:
-    user:
-      name: test
-      password: test
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  sql:
+    init:
+      mode: never
+
+seguranca:
+  usuarios:
+    admin:
+      username: ${ADMIN_USERNAME:admin}
+      password: ${ADMIN_PASSWORD:admin123}
+    usuario:
+      username: ${USUARIO_USERNAME:usuario}
+      password: ${USUARIO_PASSWORD:usuario123}

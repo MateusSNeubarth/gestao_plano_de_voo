@@ -137,7 +137,8 @@ class Trecho {
     - acaoNaChegada : AcaoNaChegada
     - numeroVagaPretendida : Integer [0..1]
     - tempoPermanenciaMinutos : Integer [0..1]
-    + calcularChegada(velocidadeKmH : Integer) : LocalDateTime
+    + chegada(velocidadeKmH : Integer) : LocalDateTime
+    + fimDaPermanencia(velocidadeKmH : Integer) : Optional<LocalDateTime>
 }
 
 note right of Trecho

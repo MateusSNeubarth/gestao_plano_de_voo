@@ -1,15 +1,13 @@
 package com.projarc.trabalhofinal.domain.model.aeronave;
 
-import lombok.Getter;
-import java.util.List;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.SuperBuilder;
 
-@Getter
+@Data
+@SuperBuilder
+@EqualsAndHashCode(callSuper = true)
 public class AeronaveParticular extends Aeronave {
 
     private String empresaResponsavelPelaManutencao;
-
-    public AeronaveParticular(String prefixo, Integer velocidadeDeCruzeiro, Integer autonomia, String empresaResponsavelPelaManutencao) {
-        super(prefixo, velocidadeDeCruzeiro, autonomia);
-        this.empresaResponsavelPelaManutencao = empresaResponsavelPelaManutencao;
-    }
 }

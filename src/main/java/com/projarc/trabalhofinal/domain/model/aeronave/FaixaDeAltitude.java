@@ -8,7 +8,7 @@ public class FaixaDeAltitude implements RegraDeOperacao {
     private Integer maximo;
 
     @Override
-    public Boolean permite(Integer altitude, LocalDateTime entrada, LocalDateTime saida) {
+    public boolean permite(int altitude, LocalDateTime entrada, LocalDateTime saida) {
         throw new UnsupportedOperationException("TODO");
     }
 }

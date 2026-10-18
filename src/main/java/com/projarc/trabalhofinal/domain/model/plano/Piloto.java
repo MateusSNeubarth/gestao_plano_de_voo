@@ -1,15 +1,12 @@
 package com.projarc.trabalhofinal.domain.model.plano;
 
-import lombok.Getter;
+import lombok.Builder;
+import lombok.Data;
 
-@Getter
+@Data
+@Builder
 public class Piloto {
 
     private Integer id;
     private String nome;
-
-    public Piloto(Integer id, String nome) {
-        this.id = id;
-        this.nome = nome;
-    }
 }

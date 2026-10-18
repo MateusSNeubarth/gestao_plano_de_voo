@@ -4,5 +4,5 @@ import java.time.LocalDateTime;
 
 public interface RegraDeOperacao {
 
-    Boolean permite(Integer altitude, LocalDateTime entrada, LocalDateTime saida);
+    boolean permite(int altitude, LocalDateTime entrada, LocalDateTime saida);
 }
