@@ -45,17 +45,22 @@ public final class PlanoPersistenceMapper {
 
     public static PlanoDeVoo toDomain(PlanoDeVooEntity planoDeVooEntity) {
         return PlanoDeVoo.builder()
-                .id(planoDeVooEntity.getId())
-                .status(planoDeVooEntity.getStatus())
-                .dataHoraPartida(planoDeVooEntity.getDataHoraPartida())
-                // Pendente: conversão da aeronave com o código do Bernardo.
-                .aeronave(null)
-                .piloto(toDomain(planoDeVooEntity.getPiloto()))
-                .origem(MalhaPersistenceMapper.toDomain(planoDeVooEntity.getOrigem()))
-                .destino(MalhaPersistenceMapper.toDomain(planoDeVooEntity.getDestino()))
+                .id(entity.getId())
+                .status(entity.getStatus())
+                .dataHoraPartida(entity.getDataHoraPartida())
+                .aeronave(AeronavePersistenceMapper.toDomain(entity.getAeronave()))
+                .piloto(PilotoPersistenceMapper.toDomain(entity.getPiloto()))
+                .origem(MalhaPersistenceMapper.toDomain(entity.getOrigem()))
+                .destino(MalhaPersistenceMapper.toDomain(entity.getDestino()))
                 .percurso(Percurso.builder()
+                        .trechos(new ArrayList<>(entity.getTrechos().stream()
+                                .map(PlanoPersistenceMapper::toDomain)
+                                .toList()))
                         .trechos(trechosToDomain(planoDeVooEntity.getTrechos()))
                         .build())
+                .reservas(new ArrayList<>(entity.getReservas().stream()
+                        .map(ReservaPersistenceMapper::toDomain)
+                        .toList()))
                 .reservas(reservasToDomain(planoDeVooEntity.getReservas()))
                 .build();
     }
