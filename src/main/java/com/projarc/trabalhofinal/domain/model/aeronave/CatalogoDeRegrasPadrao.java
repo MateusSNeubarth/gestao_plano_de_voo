@@ -1,10 +1,13 @@
 package com.projarc.trabalhofinal.domain.model.aeronave;
 
+import org.springframework.stereotype.Component;
+
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Component
 public class CatalogoDeRegrasPadrao implements CatalogoDeRegras {
 
     private final Map<Class<? extends Aeronave>, List<RegraDeOperacao>> regrasPorCategoria;

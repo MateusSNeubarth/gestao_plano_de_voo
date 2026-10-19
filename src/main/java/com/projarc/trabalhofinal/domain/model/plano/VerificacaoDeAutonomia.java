@@ -1,8 +1,11 @@
 package com.projarc.trabalhofinal.domain.model.plano;
 
+import org.springframework.stereotype.Component;
+
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 public class VerificacaoDeAutonomia implements VerificacaoDoPlano {
 
     @Override
@@ -11,7 +14,7 @@ public class VerificacaoDeAutonomia implements VerificacaoDoPlano {
             return List.of(new Problema("PLANO_NULO", "O plano de voo não pode ser nulo."));
         }
         if (plano.getAeronave() == null) {
-            return List.of(new Problema("AERONAVE_NULA", "A aeronave é obrigatória."));
+            return List.of();
         }
         Integer autonomia = plano.getAeronave().getAutonomia();
         if (autonomia == null || autonomia <= 0) {
@@ -28,7 +31,6 @@ public class VerificacaoDeAutonomia implements VerificacaoDoPlano {
             var trecho = trechos.get(i);
             if (trecho == null || trecho.getAerovia() == null
                     || trecho.getAerovia().getDistanciaKm() == null || trecho.getAerovia().getDistanciaKm() <= 0) {
-                problemas.add(new Problema("DISTANCIA_INVALIDA", "O trecho " + (i + 1) + " deve possuir distância positiva."));
                 return problemas;
             }
             distanciaAcumulada += trecho.getAerovia().getDistanciaKm();

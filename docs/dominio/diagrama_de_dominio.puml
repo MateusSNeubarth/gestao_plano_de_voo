@@ -34,7 +34,6 @@ abstract Aeronave {
     - velocidadeDeCruzeiro : Integer
     - autonomia : Integer
     + distanciaMaximaSemReabastecimento() : Double
-    + podeOperar(altitude : Integer, entrada : LocalDateTime, saida : LocalDateTime) : Boolean
 }
 
 class AeronaveParticular {
@@ -71,7 +70,6 @@ class JanelaHoraria {
 
 RegraDeOperacao <|.. FaixaDeAltitude
 RegraDeOperacao <|.. JanelaHoraria
-Aeronave "*" --> "1..*" RegraDeOperacao : regras
 
 note bottom of RegraDeOperacao
   Particular: FaixaDeAltitude 25.000 a 27.000.
