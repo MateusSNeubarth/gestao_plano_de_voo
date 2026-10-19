@@ -1,0 +1,43 @@
+@startuml DiagramaComponentes
+!pragma layout smetana
+!include <C4/C4_Component>
+
+title Diagrama de Componentes - API Backend
+
+Person(usuario, "Usuário", "Elabora e gerencia planos de voo")
+Person(admin, "Administrador", "Mantém os cadastros")
+ContainerDb(db, "Banco de Dados", "PostgreSQL", "Malha, frota, planos e reservas")
+
+Container_Boundary(api, "API Backend (Spring Boot) - arquitetura hexagonal") {
+
+  Component(seguranca, "Segurança", "Spring Security", "Basic Auth; só ADMIN cadastra")
+  Component(ctrlCadastros, "API de cadastros", "REST Controllers", "Aeroportos, aerovias, aeronaves e pilotos")
+  Component(ctrlPlanos, "API de planos", "REST Controllers", "Ciclo de vida do plano e consulta de disponibilidade")
+
+  Component(ucCadastros, "Casos de uso de cadastro", "Application services", "Regras de cadastro: duplicado e dados da categoria")
+  Component(ucPlanos, "Casos de uso de planos", "Application services, @Transactional", "Validar, aprovar, abandonar e cancelar de forma atômica; disponibilidade")
+  Component(reservas, "Serviço de reservas", "Application service", "Reserva e libera altitudes e vagas por slot")
+
+  Component(dominio, "Modelo de domínio", "Java puro", "Aeronaves, malha, PlanoDeVoo e suas transições, verificações do plano, regras de operação")
+
+  Component(persistencia, "Adaptadores de persistência", "Spring Data JPA / Hibernate", "Implementam as portas de saída; traduzem entity <-> domínio")
+}
+
+Rel(admin, ctrlCadastros, "Usa", "HTTP, REST/JSON")
+Rel(usuario, ctrlPlanos, "Usa", "HTTP, REST/JSON")
+
+Rel(ctrlCadastros, ucCadastros, "Chama", "porta de entrada")
+Rel(ctrlPlanos, ucPlanos, "Chama", "porta de entrada")
+
+Rel(ucCadastros, dominio, "Usa")
+Rel(ucPlanos, dominio, "Valida e aplica transições")
+Rel(ucPlanos, reservas, "Reserva / libera")
+
+Rel(ucCadastros, persistencia, "Lê e grava", "porta de saída")
+Rel(ucPlanos, persistencia, "Lê e grava", "porta de saída")
+Rel(reservas, persistencia, "Lê e grava", "porta de saída")
+
+Rel(persistencia, db, "SQL", "JDBC")
+
+SHOW_LEGEND()
+@enduml

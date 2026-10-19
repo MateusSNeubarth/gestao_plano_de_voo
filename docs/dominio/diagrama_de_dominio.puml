@@ -34,6 +34,7 @@ abstract Aeronave {
     - velocidadeDeCruzeiro : Integer
     - autonomia : Integer
     + distanciaMaximaSemReabastecimento() : Double
+    + podeOperar(altitude : Integer, entrada : LocalDateTime, saida : LocalDateTime) : Boolean
 }
 
 class AeronaveParticular {
@@ -70,6 +71,7 @@ class JanelaHoraria {
 
 RegraDeOperacao <|.. FaixaDeAltitude
 RegraDeOperacao <|.. JanelaHoraria
+Aeronave "*" --> "1..*" RegraDeOperacao : regras
 
 note bottom of RegraDeOperacao
   Particular: FaixaDeAltitude 25.000 a 27.000.
@@ -99,6 +101,8 @@ class PlanoDeVoo {
     + aprovar()
     + cancelar(agora : LocalDateTime)
     + abandonar()
+    + substituirPercurso(novo : Percurso)
+    + reservasNecessarias() : List<Reserva>
 }
 
 note right of PlanoDeVoo
@@ -114,6 +118,7 @@ PlanoDeVoo ..> Status
 
 class Percurso {
     + validarContinuidade(origem : Aeroporto, destino : Aeroporto)
+    + substituirTrechos(trechos : List<Trecho>)
 }
 
 PlanoDeVoo "1" *-- "1" Percurso
@@ -185,6 +190,61 @@ Reserva <|-- ReservaEstacionamento
 PlanoDeVoo "1" *-- "0..*" Reserva
 ReservaAerovia "*" --> "1" Aerovia
 ReservaEstacionamento "*" --> "1" Aeroporto
+
+' ===== Serviços do domínio =====
+
+interface VerificacaoDoPlano {
+    + verificar(plano : PlanoDeVoo) : List<Problema>
+}
+class VerificacaoDePercurso
+class VerificacaoDeHorario
+class VerificacaoDePouso
+class VerificacaoDeOperacao
+class VerificacaoDeAutonomia
+
+VerificacaoDoPlano <|.. VerificacaoDePercurso
+VerificacaoDoPlano <|.. VerificacaoDeHorario
+VerificacaoDoPlano <|.. VerificacaoDePouso
+VerificacaoDoPlano <|.. VerificacaoDeOperacao
+VerificacaoDoPlano <|.. VerificacaoDeAutonomia
+VerificacaoDoPlano ..> PlanoDeVoo : usa
+VerificacaoDoPlano ..> Problema : produz
+
+class Problema <<record>> {
+    + codigo : String
+    + mensagem : String
+}
+
+interface CatalogoDeRegras {
+    + regrasPara(aeronave : Aeronave) : List<RegraDeOperacao>
+}
+CatalogoDeRegras ..> Aeronave : usa
+CatalogoDeRegras ..> RegraDeOperacao : fornece
+VerificacaoDeOperacao ..> CatalogoDeRegras : usa
+
+interface ServicoDeReservas {
+    + reservar(plano : PlanoDeVoo)
+    + liberar(plano : PlanoDeVoo)
+}
+ServicoDeReservas ..> PlanoDeVoo : usa
+ServicoDeReservas ..> Reserva : cria / remove
+
+' ===== Exceções de domínio =====
+
+class TransicaoInvalidaException <<exception>>
+class PlanoInvalidoException <<exception>> {
+    - problemas : List<Problema>
+}
+class ConflitoDeReservaException <<exception>>
+
+PlanoDeVoo ..> TransicaoInvalidaException : lança
+PlanoInvalidoException --> "1..*" Problema : contém
+ServicoDeReservas ..> ConflitoDeReservaException : lança
+
+note bottom of TransicaoInvalidaException
+  Mudança de situação fora do estado permitido
+  ou cancelamento após a partida.
+end note
 
 interface CatalogoDeRegras {
     + regrasPara(aeronave : Aeronave) : List<RegraDeOperacao>
