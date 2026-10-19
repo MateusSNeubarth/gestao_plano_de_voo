@@ -4,6 +4,7 @@ import com.projarc.trabalhofinal.application.port.in.reserva.DisponibilidadeInPo
 import com.projarc.trabalhofinal.application.port.out.reserva.ReservaPort;
 import com.projarc.trabalhofinal.domain.model.malha.Aeroporto;
 import com.projarc.trabalhofinal.domain.model.malha.Aerovia;
+import com.projarc.trabalhofinal.domain.model.malha.Altitudes;
 import com.projarc.trabalhofinal.domain.model.reserva.ReservaAerovia;
 import com.projarc.trabalhofinal.domain.model.reserva.ReservaEstacionamento;
 import com.projarc.trabalhofinal.domain.model.reserva.Slot;
@@ -19,10 +20,6 @@ import java.util.stream.IntStream;
 @RequiredArgsConstructor
 public class DisponibilidadeUseCase implements DisponibilidadeInPort {
 
-    private static final int ALTITUDE_MINIMA = 25000;
-    private static final int ALTITUDE_MAXIMA = 35000;
-    private static final int INTERVALO_ALTITUDE = 1000;
-
     private final ReservaPort reservaPort;
 
     @Override
@@ -30,8 +27,7 @@ public class DisponibilidadeUseCase implements DisponibilidadeInPort {
         var ocupadas = reservaPort.getReservasDeAerovia(aerovia.getId(), slots(inicio, fim)).stream()
                 .map(ReservaAerovia::getAltitude)
                 .collect(Collectors.toSet());
-        return IntStream.iterate(ALTITUDE_MINIMA, altitude -> altitude <= ALTITUDE_MAXIMA, altitude -> altitude + INTERVALO_ALTITUDE)
-                .boxed()
+        return Altitudes.todas().stream()
                 .filter(altitude -> !ocupadas.contains(altitude))
                 .toList();
     }

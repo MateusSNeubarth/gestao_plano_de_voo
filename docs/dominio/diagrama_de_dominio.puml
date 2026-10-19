@@ -246,4 +246,31 @@ note bottom of TransicaoInvalidaException
   ou cancelamento após a partida.
 end note
 
+interface CatalogoDeRegras {
+    + regrasPara(aeronave : Aeronave) : List<RegraDeOperacao>
+}
+
+class CatalogoDeRegrasPadrao
+CatalogoDeRegras <|.. CatalogoDeRegrasPadrao
+CatalogoDeRegrasPadrao --> RegraDeOperacao : configura por categoria
+
+interface VerificacaoDoPlano {
+    + verificar(plano : PlanoDeVoo) : List<Problema>
+}
+
+class Problema {
+    + codigo : String
+    + mensagem : String
+}
+
+class VerificacaoDeOperacao
+class VerificacaoDeAutonomia
+VerificacaoDoPlano <|.. VerificacaoDeOperacao
+VerificacaoDoPlano <|.. VerificacaoDeAutonomia
+VerificacaoDoPlano ..> Problema
+VerificacaoDeOperacao --> CatalogoDeRegras
+VerificacaoDeOperacao ..> Trecho : verifica altitude e intervalo
+VerificacaoDeAutonomia ..> Aeronave : consulta limite de 85%
+VerificacaoDeAutonomia ..> Trecho : acumula distância até pouso
+
 @enduml
